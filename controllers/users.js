@@ -13,10 +13,10 @@ const checkError = (error, res) => {
     });
   }
 
-  if (error.name === "CastError") {
+  if (error.name === "CastError" || error.message === "CastError") {
     return res
       .status(400)
-      .send({ message: "Передан некорректный _id пользователя" });
+      .send({ message: "Переданы некорректные данные пользователя" });
   }
 
   return res.status(500).send({ message: "Ошибка на стороне сервера", error });
@@ -56,15 +56,25 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
+    const { name, about } = req.body;
+
+    if (name?.length <= 1 || name?.length > 30) {
+      throw new Error("CastError");
+    }
+
+    if (about?.length <= 1 || about?.length > 30) {
+      throw new Error("CastError");
+    }
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { ...req.body },
       { new: true }
     );
 
-    // if (!user) {
-    //   throw new Error("NotFound");
-    // }
+    if (!user) {
+      throw new Error("NotFound");
+    }
 
     return res.send(user);
   } catch (error) {
