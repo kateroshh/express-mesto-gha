@@ -31,6 +31,7 @@ app.use(function (req, res) {
     error: {
       name: "Error",
       status: 404,
+      code: 404,
       message: "Invalid Request",
       statusCode: 404,
     },
