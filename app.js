@@ -36,6 +36,7 @@ app.use(function (req, res) {
       statusCode: 404,
     },
     message: "Страница не найдена.",
+    code: 404,
   });
 });
 
