@@ -16,7 +16,7 @@ const checkError = (error, res) => {
   if (error.name === "CastError") {
     return res
       .status(400)
-      .send({ message: "Пользователь по указанному _id не найден" });
+      .send({ message: "Передан некорректный _id пользователя" });
   }
 
   return res.status(500).send({ message: "Ошибка на стороне сервера", error });
