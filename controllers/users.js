@@ -56,7 +56,11 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.user._id, { ...req.body });
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { ...req.body },
+      { new: true }
+    );
 
     // if (!user) {
     //   throw new Error("NotFound");
