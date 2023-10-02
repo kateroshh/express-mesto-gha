@@ -2,16 +2,22 @@ const Card = require("../models/card");
 
 const checkError = (error, res) => {
   if (error.message === "NotFound") {
-    res
-      .status(400)
-      .send({ message: "Переданы некорректные данные при создании карточки" });
+    res.status(404).send({
+      message: "Карточка по указанному _id не найдена",
+    });
   }
 
-  if (error.message === "CastError") {
-    res.status(404).send({ message: "Карточка с указанным _id не найдена" });
+  if (error.name === "ValidationError") {
+    return res.status(400).send({
+      message: "Переданы некорректные данные при создании карточки",
+    });
   }
 
-  res.status(500).send({ message: "Ошибка на стороне сервера", error });
+  if (error.name === "CastError" || error.message === "CastError") {
+    return res.status(400).send({ message: "Переданы некорректные данные" });
+  }
+
+  return res.status(500).send({ message: "Ошибка на стороне сервера", error });
 };
 
 const getCards = async (req, res) => {
