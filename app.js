@@ -23,8 +23,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.send("Main");
+app.use(function (req, res) {
+  res.json({
+    error: {
+      name: "Error",
+      status: 404,
+      message: "Invalid Request",
+      statusCode: 404,
+    },
+    message: "Страница не найдена",
+  });
 });
 
 app.use(UserRouter);
