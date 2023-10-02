@@ -27,7 +27,7 @@ app.use(UserRouter);
 app.use(CardRouter);
 
 app.use(function (req, res) {
-  res.json({
+  res.status(404).json({
     error: {
       name: "Error",
       status: 404,
