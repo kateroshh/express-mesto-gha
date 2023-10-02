@@ -23,6 +23,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(UserRouter);
+app.use(CardRouter);
+
 app.use(function (req, res) {
   res.json({
     error: {
@@ -34,8 +37,5 @@ app.use(function (req, res) {
     message: "Страница не найдена.",
   });
 });
-
-app.use(UserRouter);
-app.use(CardRouter);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
