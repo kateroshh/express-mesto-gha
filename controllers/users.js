@@ -1,11 +1,11 @@
 const User = require("../models/user");
 
 const checkError = (error, res) => {
-  // if (error.message === "NotFound") {
-  //   res.status(400).send({
-  //     message: "Переданы некорректные данные при создании пользователя",
-  //   });
-  // }
+  if (error.message === "NotFound") {
+    res.status(404).send({
+      message: "Пользователь по указанному _id не найден",
+    });
+  }
 
   if (error.name === "ValidationError") {
     return res.status(400).send({
@@ -13,9 +13,9 @@ const checkError = (error, res) => {
     });
   }
 
-  if (error.message === "CastError") {
+  if (error.name === "CastError") {
     return res
-      .status(404)
+      .status(400)
       .send({ message: "Пользователь по указанному _id не найден" });
   }
 
@@ -35,9 +35,9 @@ const getUsersById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
-    // if (!user) {
-    //   throw new Error("NotFound");
-    // }
+    if (!user) {
+      throw new Error("NotFound");
+    }
 
     return res.send(user);
   } catch (error) {
