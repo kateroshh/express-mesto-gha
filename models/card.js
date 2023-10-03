@@ -33,7 +33,7 @@ const cardSchema = new mongoose.Schema(
     ],
     createdAt: { type: Date, default: Date.now },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: true },
 );
 
 module.exports = mongoose.model("card", cardSchema);

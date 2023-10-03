@@ -2,7 +2,7 @@ const Card = require("../models/card");
 
 const checkError = (error, res) => {
   if (error.message === "NotFound") {
-    res.status(404).send({
+    return res.status(404).send({
       message: "Карточка по указанному _id не найдена",
     });
   }
@@ -30,8 +30,9 @@ const getCards = async (req, res) => {
 };
 
 const createCard = async (req, res) => {
+  const { name, link } = req.body;
   try {
-    const newCard = await new Card({ ...req.body, owner: req.user._id });
+    const newCard = await new Card({ name, link, owner: req.user._id });
     return res.status(201).send(await newCard.save());
   } catch (error) {
     return checkError(error, res);
@@ -57,7 +58,7 @@ const likeCard = async (req, res) => {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-      { new: true }
+      { new: true },
     );
 
     if (!card) {
@@ -75,7 +76,7 @@ const dislikeCard = async (req, res) => {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } }, // убрать _id из массива
-      { new: true }
+      { new: true },
     );
 
     if (!card) {
@@ -88,4 +89,6 @@ const dislikeCard = async (req, res) => {
   }
 };
 
-module.exports = { getCards, createCard, deleteCard, likeCard, dislikeCard };
+module.exports = {
+  getCards, createCard, deleteCard, likeCard, dislikeCard,
+};

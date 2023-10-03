@@ -2,7 +2,7 @@ const User = require("../models/user");
 
 const checkError = (error, res) => {
   if (error.message === "NotFound") {
-    res.status(404).send({
+    return res.status(404).send({
       message: "Пользователь по указанному _id не найден",
     });
   }
@@ -47,7 +47,8 @@ const getUsersById = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const newUser = await new User(req.body);
+    const { name, about, avatar } = req.body;
+    const newUser = await new User({ name, about, avatar });
     return res.status(201).send(await newUser.save());
   } catch (error) {
     return checkError(error, res);
@@ -57,19 +58,10 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { name, about } = req.body;
-
-    if (name?.length <= 1 || name?.length > 30) {
-      throw new Error("CastError");
-    }
-
-    if (about?.length <= 1 || about?.length > 30) {
-      throw new Error("CastError");
-    }
-
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { ...req.body },
-      { new: true }
+      { name, about },
+      { new: true, runValidators: true },
     );
 
     if (!user) {
@@ -82,4 +74,25 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getUsersById, createUser, updateUser };
+const updateUserAvatar = async (req, res) => {
+  try {
+    const { avatar } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar },
+      { new: true, runValidators: true },
+    );
+
+    if (!user) {
+      throw new Error("NotFound");
+    }
+
+    return res.send(user);
+  } catch (error) {
+    return checkError(error, res);
+  }
+};
+
+module.exports = {
+  getUsers, getUsersById, createUser, updateUser, updateUserAvatar,
+};

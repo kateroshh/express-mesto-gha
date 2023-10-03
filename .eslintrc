@@ -1,4 +1,33 @@
 {
+  "root": true,
   "extends": "airbnb-base",
-  "allow": ["_id"]
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "requireConfigFile": false,
+    "babelOptions": {
+      "babelrc": false,
+      "configFile": false
+    }
+  },
+  "rules": {
+    "quotes": [
+      "error",
+      "double",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": [
+          "_id"
+        ]
+      }
+    ]
+  },
+  "ignorePatterns": [
+    "src/**/*.test.ts",
+    "src/frontend/generated/*"
+  ]
 }
