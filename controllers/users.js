@@ -59,28 +59,22 @@ const createUser = async (req, res, next) => {
 
       next(error);
     });
-
-  // try {
-  //   const {
-  //     name, about, avatar, email, password,
-  //   } = req.body;
-
-  //   const hash = await bcrypt.hash(password, SOLT_ROUND);
-
-  //   const newUser = await new User({
-  //     name, about, avatar, email, password: hash,
-  //   });
-  //   return res.status(201).send(await newUser.save());
-  // } catch (error) {
-  //   if (error.code === MONGE_DUPLCATE_ERROR_CODE) {
-  //     throw new DuplcateErr("Такой пользователь уже существует");
-  //   }
-  //   return res.status(500).send({ message: "Ошибка на стороне сервера", error });
-  // }
 };
 
-const updateUser = (req, res, next) => {
+// Не получается вынести этот код в отдельную функцию.
+// Не совсем поняла какой именно кусок кода необходимо перенести
+// const updateUser = (userId, obj) => {
+//   User.findByIdAndUpdate(
+//     userId,
+//     { ...obj },
+//     { new: true, runValidators: true },
+//   );
+// };
+
+const updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
+
+  // updateUser(req.user._id, req.body).then((user) => res.send(user)).catch(next);
 
   User.findByIdAndUpdate(
     req.user._id,
@@ -93,23 +87,6 @@ const updateUser = (req, res, next) => {
       }
       res.send(user);
     }).catch(next);
-
-  // try {
-  //   const { name, about } = req.body;
-  //   const user = await User.findByIdAndUpdate(
-  //     req.user._id,
-  //     { name, about },
-  //     { new: true, runValidators: true },
-  //   );
-
-  //   if (!user) {
-  //     throw new NotFoundError("Пользователь не найден");
-  //   }
-
-  //   return res.send(user);
-  // } catch (error) {
-  //   return res.status(500).send({ message: "Ошибка на стороне сервера", error });
-  // }
 };
 
 const updateUserAvatar = (req, res, next) => {
@@ -126,23 +103,6 @@ const updateUserAvatar = (req, res, next) => {
       }
       res.send(user);
     }).catch(next);
-
-  // try {
-  //   const { avatar } = req.body;
-  //   const user = await User.findByIdAndUpdate(
-  //     req.user._id,
-  //     { avatar },
-  //     { new: true, runValidators: true },
-  //   );
-
-  //   if (!user) {
-  //     throw new NotFoundError("Пользователь не найден");
-  //   }
-
-  //   return res.send(user);
-  // } catch (error) {
-  //   return res.status(500).send({ message: "Ошибка на стороне сервера", error });
-  // }
 };
 
 const login = async (req, res, next) => {
@@ -168,5 +128,5 @@ const login = async (req, res, next) => {
 };
 
 module.exports = {
-  getUsers, getUsersById, createUser, updateUser, updateUserAvatar, login, getUser,
+  getUsers, getUsersById, createUser, updateUserProfile, updateUserAvatar, login, getUser,
 };

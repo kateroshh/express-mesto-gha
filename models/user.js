@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema(
         validator: (v) => validator.isURL(v, { protocols: ["http", "https"] }),
         message: (props) => `${props.value} некорректное значение avatar`,
       },
-
     },
     email: {
       type: String,

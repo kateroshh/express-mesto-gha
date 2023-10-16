@@ -16,7 +16,7 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findById(req.params.id)
+  Card.findByIdAndRemove(req.params.id)
     .then((card) => {
       if (!card) {
         throw new NotFoundError("Карточка по указанному _id не найдена");
@@ -25,14 +25,8 @@ const deleteCard = (req, res, next) => {
       if (card?.owner && (String(card.owner) !== req.user._id)) {
         throw new NoRights("Нет прав на удаления карточек других пользователей");
       }
-      Card.findByIdAndRemove(req.params.id)
-        .then((cardDeleted) => {
-          if (!cardDeleted) {
-            throw new NotFoundError("Карточка по указанному _id не найдена");
-          }
-          return res.send(cardDeleted);
-        })
-        .catch(next);
+
+      return res.send(card);
     })
     .catch(next);
 };
@@ -50,22 +44,6 @@ const likeCard = (req, res, next) => {
       return res.send(card);
     })
     .catch(next);
-
-  // try {
-  //   const card = await Card.findByIdAndUpdate(
-  //     req.params.cardId,
-  //     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-  //     { new: true },
-  //   );
-
-  //   if (!card) {
-  //     throw new NotFoundError("Карточка по указанному _id не найдена");
-  //   }
-
-  //   return res.send(card);
-  // } catch (error) {
-  //   return checkError(error, res);
-  // }
 };
 
 const dislikeCard = (req, res, next) => {
@@ -81,22 +59,6 @@ const dislikeCard = (req, res, next) => {
       return res.send(card);
     })
     .catch(next);
-
-  // try {
-  //   const card = await Card.findByIdAndUpdate(
-  //     req.params.cardId,
-  //     { $pull: { likes: req.user._id } }, // убрать _id из массива
-  //     { new: true },
-  //   );
-
-  //   if (!card) {
-  //     throw new NotFoundError("Карточка по указанному _id не найдена");
-  //   }
-
-  //   return res.send(card);
-  // } catch (error) {
-  //   return checkError(error, res);
-  // }
 };
 
 module.exports = {
