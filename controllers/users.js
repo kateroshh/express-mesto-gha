@@ -47,7 +47,11 @@ const createUser = async (req, res, next) => {
   User({
     name, about, avatar, email, password: hash,
   }).save()
-    .then((newUser) => res.status(201).send(newUser))
+    .then((newUser) => {
+      const userWithoutPassword = newUser.toObject();
+      delete userWithoutPassword.password;
+      res.status(201).send(userWithoutPassword);
+    })
     .catch((error) => {
       if (error.code === MONGE_DUPLCATE_ERROR_CODE) {
         next(new DuplcateErr("Такой пользователь уже существует"));
