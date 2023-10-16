@@ -8,6 +8,7 @@ const { CardRouter } = require("./routes/cards");
 const { login, createUser } = require("./controllers/users");
 const auth = require("./middlewares/auth");
 const errorHandler = require("./middlewares/error-handler");
+const { validateNewUser, validateLogin } = require("./validators/user-validator");
 
 const { PORT = 3000, MONGO_URL = "mongodb://localhost:27017/mestodb" } = process.env;
 
@@ -21,8 +22,8 @@ mongoose.connect(MONGO_URL).then(() => console.log("Connected!"));
 app.use(express.json());
 app.use(cookieParser());
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin", validateLogin, login);
+app.post("/signup", validateNewUser, createUser);
 
 app.use(auth);
 
