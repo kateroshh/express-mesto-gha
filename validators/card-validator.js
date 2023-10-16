@@ -7,6 +7,11 @@ module.exports = {
       id: Joi.objectId(),
     }),
   }),
+  validateCardIdLike: celebrate({
+    params: Joi.object().keys({
+      cardId: Joi.objectId(),
+    }),
+  }),
   validateNewCard: celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
