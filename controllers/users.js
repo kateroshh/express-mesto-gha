@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { generateToken } = require("../utils/jwt");
 const {
-  NotFoundError, DuplcateErr, ValidationErr, NotAutanticate,
+  NotFoundError, DuplcateErr, ValidationErr,
 } = require("../errors/errors");
 
 const MONGE_DUPLCATE_ERROR_CODE = 11000;

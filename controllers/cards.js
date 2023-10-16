@@ -1,104 +1,98 @@
 const Card = require("../models/card");
+const {
+  NotFoundError, NoRights,
+} = require("../errors/errors");
 
-const checkError = (error, res) => {
-  if (error.message === "NotFound") {
-    return res.status(404).send({
-      message: "Карточка по указанному _id не найдена",
-    });
-  }
-
-  if (error.name === "ValidationError") {
-    return res.status(400).send({
-      message: "Переданы некорректные данные при создании карточки",
-    });
-  }
-
-  if (error.message === "NoRights") {
-    return res.status(400).send({
-      message: "Нет прав на удаления карточек других пользователей",
-    });
-  }
-
-  if (error.name === "CastError" || error.message === "CastError") {
-    return res.status(400).send({ message: "Переданы некорректные данные" });
-  }
-
-  return res.status(500).send({ message: "Ошибка на стороне сервера", error });
+const getCards = (req, res, next) => {
+  Card.find({})
+    .then((cards) => res.send(cards)).catch(next);
 };
 
-const getCards = async (req, res) => {
-  try {
-    const cards = await Card.find({});
-    return res.send(cards);
-  } catch (error) {
-    return checkError(error, res);
-  }
-};
-
-const createCard = async (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
-  try {
-    const newCard = await new Card({ name, link, owner: req.user._id });
-    return res.status(201).send(await newCard.save());
-  } catch (error) {
-    return checkError(error, res);
-  }
+  Card({ name, link, owner: req.user._id }).save()
+    .then((newCard) => res.status(201).send(newCard))
+    .catch(next);
 };
 
-const deleteCard = async (req, res) => {
-  try {
-    const card = await Card.findById(req.params.id);
-
-    if (card.owner !== req.user._id) {
-      throw new Error("NoRights");
-    }
-
-    const cardDelete = await Card.findByIdAndRemove(req.params.id);
-
-    if (!cardDelete) {
-      throw new Error("NotFound");
-    }
-
-    return res.send(cardDelete);
-  } catch (error) {
-    return checkError(error, res);
-  }
+const deleteCard = (req, res, next) => {
+  Card.findById(req.params.id)
+    .then((card) => {
+      if (String(card.owner) !== req.user._id) {
+        throw new NoRights("Нет прав на удаления карточек других пользователей");
+      }
+      Card.findByIdAndRemove(req.params.id)
+        .then((cardDeleted) => {
+          if (!cardDeleted) {
+            throw new NotFoundError("Карточка по указанному _id не найдена");
+          }
+          return res.send(cardDeleted);
+        })
+        .catch(next);
+    })
+    .catch(next);
 };
 
-const likeCard = async (req, res) => {
-  try {
-    const card = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-      { new: true },
-    );
+const likeCard = (req, res, next) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError("Карточка по указанному _id не найдена");
+      }
+      return res.send(card);
+    })
+    .catch(next);
 
-    if (!card) {
-      throw new Error("NotFound");
-    }
+  // try {
+  //   const card = await Card.findByIdAndUpdate(
+  //     req.params.cardId,
+  //     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+  //     { new: true },
+  //   );
 
-    return res.send(card);
-  } catch (error) {
-    return checkError(error, res);
-  }
+  //   if (!card) {
+  //     throw new NotFoundError("Карточка по указанному _id не найдена");
+  //   }
+
+  //   return res.send(card);
+  // } catch (error) {
+  //   return checkError(error, res);
+  // }
 };
 
-const dislikeCard = async (req, res) => {
-  try {
-    const card = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
-      { new: true },
-    );
+const dislikeCard = (req, res, next) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError("Карточка по указанному _id не найдена");
+      }
+      return res.send(card);
+    })
+    .catch(next);
 
-    if (!card) {
-      throw new Error("NotFound");
-    }
+  // try {
+  //   const card = await Card.findByIdAndUpdate(
+  //     req.params.cardId,
+  //     { $pull: { likes: req.user._id } }, // убрать _id из массива
+  //     { new: true },
+  //   );
 
-    return res.send(card);
-  } catch (error) {
-    return checkError(error, res);
-  }
+  //   if (!card) {
+  //     throw new NotFoundError("Карточка по указанному _id не найдена");
+  //   }
+
+  //   return res.send(card);
+  // } catch (error) {
+  //   return checkError(error, res);
+  // }
 };
 
 module.exports = {
