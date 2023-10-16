@@ -4,7 +4,7 @@ Joi.objectId = require('joi-objectid')(Joi);
 module.exports = {
   validateObjId: celebrate({
     body: Joi.object().keys({
-      _id: Joi.objectId().required(),
+      _id: Joi.objectId(),
       // string().required().regex(/^[0-9a-fA-F]{24}$/),
     }),
   }),
