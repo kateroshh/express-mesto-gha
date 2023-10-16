@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 module.exports = {
   validateObjId: celebrate({
     body: Joi.object().keys({
-      _id: Joi.string().required(),
+      _id: Joi.objectId().required(),
     }),
   }),
   validateAvatar: celebrate({
