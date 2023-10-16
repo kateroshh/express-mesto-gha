@@ -13,6 +13,12 @@ const checkError = (error, res) => {
     });
   }
 
+  if (error.message === "NoRights") {
+    return res.status(400).send({
+      message: "Нет прав на удаления карточек других пользователей",
+    });
+  }
+
   if (error.name === "CastError" || error.message === "CastError") {
     return res.status(400).send({ message: "Переданы некорректные данные" });
   }
@@ -41,13 +47,19 @@ const createCard = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.id);
+    const card = await Card.findById(req.params.id);
 
-    if (!card) {
+    if (card.owner !== req.user._id) {
+      throw new Error("NoRights");
+    }
+
+    const cardDelete = await Card.findByIdAndRemove(req.params.id);
+
+    if (!cardDelete) {
       throw new Error("NotFound");
     }
 
-    return res.send(card);
+    return res.send(cardDelete);
   } catch (error) {
     return checkError(error, res);
   }
