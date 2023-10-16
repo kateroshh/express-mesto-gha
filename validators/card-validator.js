@@ -3,7 +3,7 @@ Joi.objectId = require('joi-objectid')(Joi);
 
 module.exports = {
   validateCardId: celebrate({
-    headers: Joi.object().keys({
+    params: Joi.object().keys({
       id: Joi.objectId(),
     }),
   }),
