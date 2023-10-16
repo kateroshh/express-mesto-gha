@@ -3,8 +3,8 @@ Joi.objectId = require('joi-objectid')(Joi);
 
 module.exports = {
   validateObjId: celebrate({
-    body: Joi.object().keys({
-      _id: Joi.objectId(),
+    headers: Joi.object().keys({
+      id: Joi.objectId(),
     }),
   }),
   validateAvatar: celebrate({

@@ -18,13 +18,17 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
-      if (String(card?.owner) !== req.user._id) {
-        return new NoRights("Нет прав на удаления карточек других пользователей");
+      if (!card) {
+        throw new NotFoundError("Карточка по указанному _id не найдена");
+      }
+
+      if (card?.owner && (String(card.owner) !== req.user._id)) {
+        throw new NoRights("Нет прав на удаления карточек других пользователей");
       }
       Card.findByIdAndRemove(req.params.id)
         .then((cardDeleted) => {
           if (!cardDeleted) {
-            return new NotFoundError("Карточка по указанному _id не найдена");
+            throw new NotFoundError("Карточка по указанному _id не найдена");
           }
           return res.send(cardDeleted);
         })
