@@ -1,9 +1,11 @@
 const { celebrate, Joi } = require('celebrate');
+Joi.objectId = require('joi-objectid')(Joi);
 
 module.exports = {
   validateObjId: celebrate({
     body: Joi.object().keys({
-      _id: Joi.string().hex().length(24).required(),
+      _id: Joi.objectId().required(),
+      // string().required().regex(/^[0-9a-fA-F]{24}$/),
     }),
   }),
   validateAvatar: celebrate({

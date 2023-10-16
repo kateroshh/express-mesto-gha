@@ -149,12 +149,12 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email }).select("+password").orFail(() => { throw new ValidationErr("Не правильный email или пароль"); });
-
+    const user = await User.findOne({ email }).select("+password").orFail(next);
+    // .orFail(() => { throw new ValidationErr("Не правильный email или пароль"); })
     const matched = await bcrypt.compare(String(password), user.password);
 
     if (!matched) {
-      next(new NotAutanticate("Не правильный email или пароль"));
+      next(new ValidationErr("Не правильный email или пароль"));
     }
 
     const token = generateToken({ _id: user._id, email: user.email });
