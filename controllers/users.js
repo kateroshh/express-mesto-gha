@@ -46,11 +46,11 @@ const createUser = async (req, res, next) => {
 
   User({
     name, about, avatar, email, password: hash,
-  })
-    .then((newUser) => newUser.save())
+  }).save()
+    .then((newUser) => res.status(201).send(newUser))
     .catch((error) => {
       if (error.code === MONGE_DUPLCATE_ERROR_CODE) {
-        throw new DuplcateErr("Такой пользователь уже существует");
+        next(new DuplcateErr("Такой пользователь уже существует"));
       }
 
       next(error);
